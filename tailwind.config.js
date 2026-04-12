@@ -13,5 +13,10 @@ export default {
       },
     },
   },
+  // Eğer bazı sınıflar hala kayboluyorsa buraya ekleyebilirsin
+  safelist: [
+    'whitespace-nowrap',
+    'min-w-fit'
+  ],
   plugins: [],
 }
