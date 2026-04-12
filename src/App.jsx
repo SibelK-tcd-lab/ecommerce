@@ -5,11 +5,10 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
 
-// Sayfa değiştiğinde otomatik olarak en yukarı çıkmasını sağlayan yardımcı bileşen
+// Sayfa değiştiğinde otomatik olarak en yukarı çıkaran bileşen
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
-    // Bazı tarayıcılarda anlık sıçramayı önlemek için 'instant' kullanılabilir
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
   return null;
@@ -18,12 +17,8 @@ const ScrollToTop = () => {
 const App = () => {
   return (
     <Router>
-      {/* Her sayfa geçişinde scroll'u sıfırlar */}
       <ScrollToTop /> 
       
-      {/* min-h-screen: Sayfa kısa olsa bile footer altta kalır.
-          flex-col: İçerik hiyerarşisini dikeyde yönetir.
-      */}
       <div className="min-h-screen bg-white flex flex-col font-sans">
         
         {/* Navigasyon Alanı */}
@@ -32,10 +27,7 @@ const App = () => {
           <Navbar />
         </header>
 
-        {/* Ana İçerik Alanı: 
-            flex-grow: Boş alanı doldurur ve footer'ı aşağı iter.
-            overflow-x-hidden: Yatay kaymayı sadece içerik alanında engeller.
-        */}
+        {/* Ana İçerik Alanı */}
         <main className="flex-grow w-full overflow-x-hidden">
           <AppRoutes />
         </main>
