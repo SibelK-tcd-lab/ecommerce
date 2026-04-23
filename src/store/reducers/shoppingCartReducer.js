@@ -1,68 +1,64 @@
+// src/store/reducers/shoppingCartReducer.js
+
 const initialState = {
-  cart: [], // Yapı: [{ product: {}, count: 1, color: "Blue", size: "M" }]
+  cart: [], 
   totalAmount: 0,
   totalItems: 0
 };
 
+const calculateTotals = (cart) => {
+  return cart.reduce(
+    (acc, item) => {
+      const price = parseFloat(item.product.newPrice.replace(/[^0-9.-]+/g, "")) || 0;
+      acc.totalItems += item.count;
+      acc.totalAmount += price * item.count;
+      return acc;
+    },
+    { totalItems: 0, totalAmount: 0 }
+  );
+};
+
+// DİKKAT: Burada 'export const' kullanıyoruz (Named Export)
 export const shoppingCartReducer = (state = initialState, action) => {
+  let updatedCart;
+
   switch (action.type) {
-    case 'ADD_TO_CART': {
-      // Ürün zaten aynı özelliklerle (ID + Color + Size) sepette var mı?
+    case 'ADD_TO_CART':
       const existingItemIndex = state.cart.findIndex(
         (item) => 
-          String(item.product.id) === String(action.payload.product.id) &&
+          item.product.id === action.payload.product.id &&
           item.color === action.payload.color &&
           item.size === action.payload.size
       );
 
-      let updatedCart;
-
       if (existingItemIndex >= 0) {
-        // Eğer varsa: Mevcut olanın count değerini artır
         updatedCart = state.cart.map((item, index) => 
-          index === existingItemIndex 
-            ? { ...item, count: item.count + 1 } 
-            : item
+          index === existingItemIndex ? { ...item, count: item.count + 1 } : item
         );
       } else {
-        // Eğer yoksa: Yeni bir obje olarak sepete ekle
-        updatedCart = [...state.cart, action.payload];
+        updatedCart = [...state.cart, { ...action.payload, count: 1 }];
       }
+      return { ...state, cart: updatedCart, ...calculateTotals(updatedCart) };
 
-      return {
-        ...state,
-        cart: updatedCart
-      };
-    }
-
-    case 'REMOVE_FROM_CART': {
-      // Belirli bir ürünü (veya renk/boyut varyasyonunu) sepetten tamamen siler
-      const filteredCart = state.cart.filter(
+    case 'REMOVE_FROM_CART':
+      updatedCart = state.cart.filter(
         (item) => 
-          !(String(item.product.id) === String(action.payload.id) && 
+          !(item.product.id === action.payload.id && 
             item.color === action.payload.color && 
             item.size === action.payload.size)
       );
-      return { ...state, cart: filteredCart };
-    }
+      return { ...state, cart: updatedCart, ...calculateTotals(updatedCart) };
 
-    case 'UPDATE_COUNT': {
-      // Sepet sayfasında adet artırıp azaltmak için
-      const updatedCart = state.cart.map((item) => {
-        if (
-          String(item.product.id) === String(action.payload.id) &&
-          item.color === action.payload.color &&
-          item.size === action.payload.size
-        ) {
-          return { ...item, count: Math.max(1, action.payload.count) };
+    case 'UPDATE_COUNT':
+      updatedCart = state.cart.map((item) => {
+        if (item.product.id === action.payload.id && 
+            item.color === action.payload.color && 
+            item.size === action.payload.size) {
+          return { ...item, count: Math.max(1, item.count + action.payload.delta) };
         }
         return item;
       });
-      return { ...state, cart: updatedCart };
-    }
-
-    case 'CLEAR_CART':
-      return initialState;
+      return { ...state, cart: updatedCart, ...calculateTotals(updatedCart) };
 
     default:
       return state;

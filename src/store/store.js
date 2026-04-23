@@ -1,11 +1,13 @@
-import { combineReducers, createStore, applyMiddleware } from 'redux';
+// src/store/store.js
+import { legacy_createStore as createStore, combineReducers, applyMiddleware } from 'redux';
 import { thunk } from 'redux-thunk';
 import { productReducer } from './reducers/productReducer';
-import { shoppingCartReducer } from './reducers/shoppingCartReducer';
+// DİKKAT: Süslü parantez { } kullanmalısın çünkü reducer 'export const' ile tanımlandı
+import { shoppingCartReducer } from './reducers/shoppingCartReducer'; 
 
 const rootReducer = combineReducers({
-  product: productReducer, // Tekil 'product' olmalı
-  shoppingCart: shoppingCartReducer
+  product: productReducer,
+  shoppingCart: shoppingCartReducer, // Componentlerde state.shoppingCart olarak çağıracaksın
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
