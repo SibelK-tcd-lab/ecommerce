@@ -1,69 +1,130 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { allProducts } from '../data/productData';
+import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../store/actions/productActions';
 
 const ProductDetails = () => {
-  const { productId } = useParams();
-  const product = allProducts.find((p) => p.id === Number(productId));
-  const [size, setSize] = useState("M");
-  const [selectedColor, setSelectedColor] = useState("");
+  const { id } = useParams();
+  const history = useHistory();
+  const dispatch = useDispatch();
 
-  if (!product) return <div className="py-20 text-center font-bold text-2xl">Product not found!</div>;
+  // State Yönetimi: Renk ve Boyut seçimi için
+  const [selectedColor, setSelectedColor] = useState("Blue");
+  const [selectedSize, setSelectedSize] = useState("M");
+
+  const { productList, fetchState } = useSelector((state) => state.product);
+  const product = productList.find((p) => String(p.id) === String(id));
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (productList.length === 0 && fetchState !== 'FETCHING') {
+      dispatch(fetchProducts());
+    }
+  }, [id, dispatch, productList.length, fetchState]);
+
+  // Sepete Ekleme Fonksiyonu (Yeni Reducer yapısına tam uyumlu)
+  const handleAddToCart = () => {
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: {
+        product: product,
+        count: 1,
+        color: selectedColor,
+        size: selectedSize
+      }
+    });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    history.push('/checkout');
+  };
+
+  if (fetchState === 'FETCHING' || !product) {
+    return (
+      <div className="py-20 text-center flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#23A6F0] mb-4"></div>
+        <p className="font-bold text-xl text-gray-400">Loading product details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="overflow-hidden rounded-lg group shadow-sm border">
-          <img src={product.img} className="w-full h-[600px] object-cover transition-transform duration-700 group-hover:scale-110" alt={product.title} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        {/* Ürün Görseli */}
+        <div className="rounded-lg overflow-hidden shadow-xl border">
+          <img src={product.img} className="w-full h-auto object-cover" alt={product.title} />
         </div>
-        
-        <div className="flex flex-col space-y-6">
-          <h1 className="text-3xl font-bold text-[#252B42]">{product.title}</h1>
+
+        {/* Ürün Detayları */}
+        <div className="flex flex-col space-y-8">
+          <div>
+            <h1 className="text-4xl font-bold text-[#252B42] mb-2">{product.title}</h1>
+            <p className="text-3xl font-bold text-[#23856D]">{product.newPrice}</p>
+          </div>
           
-          <div className="flex items-center gap-2">
-            <div className="flex text-yellow-400 text-sm">
-               {[...Array(5)].map((_, i) => (<i key={i} className="fa-solid fa-star"></i>))}
-            </div>
-            <span className="text-[#737373] font-bold">({product.reviews} Reviews)</span>
-          </div>
+          <p className="text-[#858585] text-lg leading-relaxed">{product.description}</p>
 
-          <div className="flex gap-4 text-2xl font-bold">
-            <span className="text-[#BDBDBD] line-through">{product.oldPrice}</span>
-            <span className="text-[#23856D]">{product.newPrice}</span>
-          </div>
-
-          <p className="text-[#858585] leading-relaxed text-lg">{product.description}</p>
-          <hr />
-
-          <div className="space-y-4">
-            <h5 className="font-bold text-[#252B42]">Select Color:</h5>
-            <div className="flex gap-3">
-              {["#23A6F0", "#23856D", "#E77C40", "#252B42", "#808000", "#FFD700"].map((c, i) => (
-                <button 
-                  key={i} 
-                  onClick={() => setSelectedColor(c)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColor === c ? 'ring-2 ring-offset-2 ring-blue-400' : ''}`} 
-                  style={{backgroundColor: c}} 
-                />
+          {/* Renk Seçimi (Dinamik) */}
+          <div className="space-y-3">
+            <h3 className="font-bold text-[#252B42]">Select Color:</h3>
+            <div className="flex gap-4">
+              {["Blue", "Green", "Orange", "Black"].map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`px-6 py-2 rounded-full border-2 transition-all ${
+                    selectedColor === color 
+                    ? 'border-[#23A6F0] bg-[#23A6F0] text-white shadow-md' 
+                    : 'border-gray-200 text-gray-500 hover:border-[#23A6F0]'
+                  }`}
+                >
+                  {color}
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h5 className="font-bold text-[#252B42]">Select Size:</h5>
-            <div className="flex gap-2">
-              {["S", "M", "L", "XL"].map((s) => (
-                <button key={s} onClick={() => setSize(s)} className={`w-12 h-10 border font-bold transition-all ${size === s ? 'bg-[#23A6F0] text-white border-[#23A6F0]' : 'hover:bg-gray-50'}`}>{s}</button>
+          {/* Boyut Seçimi (Dinamik) */}
+          <div className="space-y-3">
+            <h3 className="font-bold text-[#252B42]">Select Size:</h3>
+            <div className="flex gap-4">
+              {["S", "M", "L", "XL"].map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center font-bold transition-all ${
+                    selectedSize === size 
+                    ? 'border-[#23A6F0] text-[#23A6F0] bg-blue-50' 
+                    : 'border-gray-200 text-gray-400 hover:border-[#23A6F0]'
+                  }`}
+                >
+                  {size}
+                </button>
               ))}
             </div>
           </div>
 
-          <button className="bg-[#23A6F0] text-white py-4 px-10 rounded-md font-bold hover:shadow-xl transition-all active:scale-95 w-full md:w-fit uppercase mt-4">
-            Add to Cart
-          </button>
+          {/* Aksiyon Butonları */}
+          <div className="flex gap-4 pt-4">
+            <button 
+              onClick={handleAddToCart} 
+              className="flex-1 border-2 border-[#23A6F0] text-[#23A6F0] py-4 rounded-md font-bold uppercase hover:bg-[#23A6F0] hover:text-white transition-all shadow-sm"
+            >
+              Add to Cart
+            </button>
+            <button 
+              onClick={handleBuyNow} 
+              className="flex-1 bg-[#23A6F0] text-white py-4 rounded-md font-bold uppercase hover:bg-[#1b8ecf] transition-all shadow-md active:scale-95"
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default ProductDetails;
