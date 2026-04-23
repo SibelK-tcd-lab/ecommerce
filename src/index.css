@@ -3,30 +3,48 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    @apply text-[16px] scroll-smooth;
-    height: auto !important;
+  /* 1. Kural: html ve body'yi asla sabitleme, içeriğin uzamasına izin ver */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* Sabit height: 100% yerine min-height kullanmalıyız */
     min-height: 100% !important;
+    height: auto !important;
+    /* Mobilde kaydırmayı zorunlu hale getirir */
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    /* Mobilde daha yumuşak bir kaydırma hissi sağlar */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-white text-[#252B42] font-sans antialiased leading-normal;
-    height: auto !important;
-    min-height: 100% !important;
-    margin: 0;
-    padding: 0;
-    /* Yatay kaymayı engellerken dikey akışa izin veriyoruz */
-    overflow-x: hidden; 
-    overflow-y: visible !important; 
   }
 
+  /* 2. Kural: App.jsx'teki ana div olan #root yapısını esnet */
   #root {
     display: flex;
     flex-direction: column;
+    /* En az ekran boyu kadar olsun ama içerik varsa uzasın */
     min-height: 100vh;
     height: auto !important;
+    width: 100%;
   }
 
+  /* 3. Kural: main (içerik) alanının sönmesini engelle */
+  main {
+    flex: 1 0 auto; 
+    width: 100%;
+    position: relative;
+    display: block;
+    /* Eğer bir içerik yoksa bile en az 1px yer tutsun ki footer'ı itebilsin */
+    min-height: 1px; 
+    overflow: visible !important;
+  }
+
+  /* Tipografi Ayarları */
   h1 { @apply text-4xl md:text-[58px] font-black leading-[1.1] tracking-[-0.02em] mb-6; }
   h2 { @apply text-3xl md:text-4xl font-bold tracking-tight mb-4; }
   h5 { @apply text-base font-bold tracking-[0.1px] mb-2; }
@@ -41,9 +59,11 @@
   }
 }
 
-/* Mobil cihazlarda Footer'ın kesilmemesi için padding düzeltmesi */
+/* 4. Kural: Mobil cihazlar için son dokunuş */
 @media (max-width: 768px) {
-  main {
-    padding-bottom: 120px !important; 
+  /* Resources kısmının (Footer sonu) kesilmemesi için padding ekle */
+  footer {
+    padding-bottom: 60px !important; 
+    margin-top: auto;
   }
 }
