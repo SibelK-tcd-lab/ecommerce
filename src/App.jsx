@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchRoles } from './store/actions/clientActions.js';
 import TopHeader from "./components/layout/TopHeader";
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
 
-// Sayfa değiştiğinde otomatik olarak en yukarı çıkaran bileşen
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -15,24 +16,32 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Uygulama açıldığında rolleri güvenle çekiyoruz
+    dispatch(fetchRoles());
+  }, [dispatch]);
+
   return (
     <Router>
       <ScrollToTop /> 
       
-      <div className="min-h-screen bg-white flex flex-col font-sans">
+      {/* Ana sarmalayıcı: Footer'ı en alta iten Flexbox yapısı */}
+      <div className="min-h-screen flex flex-col bg-white font-sans overflow-x-hidden">
         
-        {/* Navigasyon Alanı */}
-        <header className="w-full shrink-0">
+        {/* Header Bölümü */}
+        <header className="w-full shrink-0 relative z-50">
           <TopHeader />
           <Navbar />
         </header>
 
-        {/* Ana İçerik Alanı */}
-        <main className="flex-grow w-full overflow-x-hidden">
+        {/* İçerik Bölümü: flex-grow sayfanın uzamasını sağlar */}
+        <main className="flex-grow w-full relative">
           <AppRoutes />
         </main>
 
-        {/* Alt Bilgi Alanı */}
+        {/* Footer Bölümü */}
         <footer className="w-full shrink-0">
           <Footer />
         </footer>

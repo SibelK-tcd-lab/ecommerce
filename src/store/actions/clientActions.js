@@ -1,6 +1,6 @@
 import { API } from '../../api/axiosInstance';
 
-// Action Types - Sabit olarak tanımlamak profesyonel yaklaşımdır
+// Action Types
 export const SET_ROLES = 'SET_ROLES';
 
 // Action Creators
@@ -8,20 +8,24 @@ export const setRoles = (roles) => ({ type: SET_ROLES, payload: roles });
 
 // Thunk Action Creator
 export const fetchRoles = () => (dispatch, getState) => {
-  const { roles } = getState().client;
+  // GÜVENLİ ERİŞİM: getState().client undefined olsa bile uygulama artık çökmez.
+  const state = getState();
+  const client = state.client || {}; 
+  const roles = client.roles || [];
   
-  // "In case of need" kuralı: Eğer roller zaten varsa dur.
+  // Eğer roller zaten yüklüyse gereksiz API isteği atma
   if (roles && roles.length > 0) {
     return;
   }
 
-  // API isteği atılmadan önce fetchState'i "FETCHING" yapabilirsin (opsiyonel)
+  // API isteği
   API.get('/roles')
     .then(res => {
       dispatch(setRoles(res.data));
     })
     .catch(err => {
-      console.error("Error fetching roles:", err);
-      // Hata durumunda fail state'i güncellenebilir
+      console.error("Roller çekilirken hata oluştu (Timeout veya Network):", err);
+      // Hata olsa bile uygulamayı kilitlememek için boş dizi gönderiyoruz
+      dispatch(setRoles([]));
     });
 };
