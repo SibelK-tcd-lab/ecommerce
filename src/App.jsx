@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchRoles } from './store/actions/clientActions.js';
-import { TopHeader } from './components/layout/TopHeader';
+import { checkAutoLogin, fetchRoles } from './store/actions/clientActions';
+import TopHeader from './components/layout/TopHeader';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
@@ -19,7 +19,8 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Uygulama açıldığında rolleri güvenle çekiyoruz
+    // Uygulama ilk açıldığında otomatik giriş ve rolleri güvenle çekiyoruz
+    dispatch(checkAutoLogin());
     dispatch(fetchRoles());
   }, [dispatch]);
 

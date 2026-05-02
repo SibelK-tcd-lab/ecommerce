@@ -1,8 +1,27 @@
-// Aksiyon Tipleri
+import { API } from '../../api/axiosInstance';
+
+// --- 1. Kategori Aksiyonları ---
+export const SET_CATEGORIES = 'SET_CATEGORIES';
+
+export const setCategories = (categories) => ({
+  type: SET_CATEGORIES,
+  payload: categories,
+});
+
+export const fetchCategories = () => async (dispatch) => {
+  try {
+    const response = await API.get('/categories');
+    dispatch(setCategories(response.data));
+  } catch (error) {
+    console.error('Kategoriler çekilirken bir hata oluştu:', error);
+  }
+};
+
+// --- 2. Ürün Aksiyonları ---
 export const SET_PRODUCT_LIST = 'SET_PRODUCT_LIST';
 export const SET_FETCH_STATE = 'SET_FETCH_STATE';
 
-// Paylaştığın ürün verileri
+// Örnek ürün verileri
 const allProducts = [
   { id: 1, title: "Knitwear Sweater", dept: "Semi Casual", img: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=800", oldPrice: "$16.48", newPrice: "$6.48", description: "Premium knitwear..." },
   { id: 2, title: "Hooded Sports Wear", dept: "Hoodie Style", img: "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800", oldPrice: "$16.48", newPrice: "$6.48", description: "Athletic comfort..." },
@@ -18,12 +37,29 @@ const allProducts = [
   { id: 12, title: "Denim Trucker Jacket", dept: "Casual", img: "https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=800", oldPrice: "$12.48", newPrice: "$9.48", description: "Authentic denim jacket..." }
 ];
 
-export const fetchProducts = () => (dispatch) => {
+export const fetchProducts = () => async (dispatch) => {
   dispatch({ type: SET_FETCH_STATE, payload: 'FETCHING' });
   
-  // API simülasyonu: Veriyi Redux'a aktar ve durumu FETCHED yap
-  setTimeout(() => {
-    dispatch({ type: SET_PRODUCT_LIST, payload: allProducts });
+  try {
+    const response = await API.get('/products');
+    
+    // Gelen objeden total ve products değerlerini ayırarak dispatch ediyoruz
+    dispatch({ 
+      type: SET_PRODUCT_LIST, 
+      payload: response.data // { total: Number, products: Array }
+    });
+    
     dispatch({ type: SET_FETCH_STATE, payload: 'FETCHED' });
-  }, 200);
+  } catch (error) {
+    console.error('Ürünler çekilirken bir hata oluştu:', error);
+    
+    // Geliştirme ortamında API'den veri alınamazsa test amaçlı örnek veriler yüklenir.
+    setTimeout(() => {
+      dispatch({ 
+        type: SET_PRODUCT_LIST, 
+        payload: { products: allProducts, total: allProducts.length } 
+      });
+      dispatch({ type: SET_FETCH_STATE, payload: 'FETCHED' });
+    }, 500);
+  }
 };

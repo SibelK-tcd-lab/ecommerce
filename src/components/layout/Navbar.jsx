@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Search, ShoppingCart, Heart, ChevronDown, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import NavbarDropdown from './NavbarDropdown'; // Proje dizininize göre dosya yolunu güncelleyebilirsiniz
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,9 +28,10 @@ const Navbar = () => {
           {/* DESKTOP MENU */}
           <div className="hidden md:flex items-center gap-6 text-[#737373] font-bold text-sm">
             <Link to="/" className="hover:text-[#23A6F0]">Home</Link>
-            <Link to="/shop" className="flex items-center gap-1 hover:text-[#23A6F0]">
-              Shop <ChevronDown size={16} />
-            </Link>
+            
+            {/* Kategori Dropdown Bileşeni */}
+            <NavbarDropdown />
+
             <Link to="/about" className="hover:text-[#23A6F0]">About</Link>
             <Link to="/blog" className="hover:text-[#23A6F0]">Blog</Link>
             <Link to="/contact" className="hover:text-[#23A6F0]">Contact</Link>
