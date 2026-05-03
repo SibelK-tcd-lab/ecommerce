@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Bildirim kütüphanesi için stil
+
 import { checkAutoLogin, fetchRoles } from './store/actions/clientActions';
 import TopHeader from './components/layout/TopHeader';
 import Navbar from './components/layout/Navbar';
@@ -9,9 +12,11 @@ import AppRoutes from './routes/AppRoutes';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
+
   return null;
 };
 
@@ -19,7 +24,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Uygulama ilk açıldığında otomatik giriş ve rolleri güvenle çekiyoruz
+    // Uygulama ilk açıldığında otomatik giriş ve rolleri çekiyoruz
     dispatch(checkAutoLogin());
     dispatch(fetchRoles());
   }, [dispatch]);
@@ -28,6 +33,19 @@ const App = () => {
     <Router>
       <ScrollToTop /> 
       
+      {/* Bildirimlerin gösterilmesi için ToastContainer */}
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       {/* Ana sarmalayıcı: Footer'ı en alta iten Flexbox yapısı */}
       <div className="min-h-screen flex flex-col bg-white font-sans overflow-x-hidden">
         
