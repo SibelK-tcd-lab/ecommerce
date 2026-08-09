@@ -1,40 +1,50 @@
 const express = require("express");
 const cors = require("cors");
+
 const productRoutes = require("./products/productRoutes");
+const authRoutes = require("./auth/authRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Rotalar
+// ===============================
+// PRODUCTS
+// ===============================
 app.use("/api/products", productRoutes);
 
-// Roles Endpoint
+// ===============================
+// AUTH
+// ===============================
+app.use("/api", authRoutes);
+
+// ===============================
+// ROLES
+// ===============================
 app.get("/api/roles", (req, res) => {
   res.json([
     { id: 1, name: "Admin", code: "admin" },
     { id: 2, name: "Müşteri", code: "customer" },
-    { id: 3, name: "Mağaza", code: "store" }
+    { id: 3, name: "Mağaza", code: "store" },
   ]);
 });
 
-// Auto-Login Verify Endpoint
-app.get("/api/verify", (req, res) => {
+// ===============================
+// TEST
+// ===============================
+app.get("/", (req, res) => {
   res.json({
-    id: 1,
-    name: "Test Kullanıcı",
-    email: "test@example.com"
+    success: true,
+    message: "Backend API çalışıyor",
   });
 });
 
-// Test Endpoint
-app.get("/", (req, res) => {
-  res.json({ message: "Backend API çalışıyor" });
-});
-
-const PORT = process.env.PORT || 5000;
+// ===============================
+// SERVER
+// ===============================
+const PORT = 5000;
 
 app.listen(PORT, () => {
-  console.log(`Backend sunucusu ${PORT} portunda çalışıyor...`);
+  console.log(`Backend ${PORT} portunda çalışıyor`);
 });

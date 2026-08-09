@@ -1,83 +1,189 @@
 const express = require("express");
 const router = express.Router();
 
-// Test için sahte (mock) ürün verisi
+// Frontend'deki gerçek ürünler
 let products = [
   {
     id: 1,
-    name: "Kablosuz Kulaklık",
-    price: 1250,
-    stock: 15,
-    description: "Yüksek ses kaliteli gürültü engelleyici kulaklık",
-    category: "Elektronik",
-    image: "https://via.placeholder.com/150"
+    title: "Knitwear Sweater",
+    dept: "Semi Casual",
+    img: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Premium knitwear designed for a sophisticated yet relaxed look. Made with high-quality yarn for durability and comfort.",
   },
   {
     id: 2,
-    name: "Akıllı Saat",
-    price: 2400,
-    stock: 8,
-    description: "Nabız ve adım ölçer özellikli akıllı saat",
-    category: "Elektronik",
-    image: "https://via.placeholder.com/150"
+    title: "Hooded Sports Wear",
+    dept: "Hoodie Style",
+    img: "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Athletic comfort meets street fashion in this durable hooded sportswear. Perfect for outdoor activities or casual gym sessions.",
   },
   {
     id: 3,
-    name: "Mekanik Klavye",
-    price: 850,
-    stock: 20,
-    description: "RGB aydınlatmalı oyuncu klavyesi",
-    category: "Aksesuar",
-    image: "https://via.placeholder.com/150"
-  }
+    title: "Classic Leather Jacket",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/1182825/pexels-photo-1182825.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Iconic leather jacket silhouette for a timeless and bold appearance.",
+  },
+  {
+    id: 4,
+    title: "Essential T-Shirt",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/1759622/pexels-photo-1759622.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Everyday comfort with high-quality cotton fabric for ultimate breathability.",
+  },
+  {
+    id: 5,
+    title: "Oxford Dress Shirt",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/1462637/pexels-photo-1462637.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Sharp and versatile dress shirt, perfect for professional and social events.",
+  },
+  {
+    id: 6,
+    title: "Structured Blazer",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Modern tailored blazer that defines elegance in formal wear.",
+  },
+  {
+    id: 7,
+    title: "Vintage Blazer Jacket",
+    dept: "Semi Formal",
+    img: "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Classic semi formal piece with a vintage texture for a distinguished look.",
+  },
+  {
+    id: 8,
+    title: "Slim Fit Shirt",
+    dept: "Semi Casual",
+    img: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$16.48",
+    newPrice: "$6.48",
+    description:
+      "Modern slim fit design, offering a sharp silhouette for the modern man.",
+  },
+  {
+    id: 9,
+    title: "Graphic T-Shirt",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/704977/pexels-photo-704977.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$25.00",
+    newPrice: "$18.00",
+    description:
+      "Artistic and expressive graphic tee for a relaxed street vibe.",
+  },
+  {
+    id: 10,
+    title: "Heavyweight Sweater",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$30.48",
+    newPrice: "$22.48",
+    description:
+      "Durable and warm heavyweight sweater for cold weather comfort.",
+  },
+  {
+    id: 11,
+    title: "Padded Winter Jacket",
+    dept: "Semi Casual",
+    img: "https://images.pexels.com/photos/842811/pexels-photo-842811.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$20.00",
+    newPrice: "$15.00",
+    description:
+      "Technical winter jacket providing superior warmth and clean aesthetics.",
+  },
+  {
+    id: 12,
+    title: "Denim Trucker Jacket",
+    dept: "Casual",
+    img: "https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=800",
+    oldPrice: "$12.48",
+    newPrice: "$9.48",
+    description:
+      "Authentic denim jacket, the perfect outer layer for any casual outfit.",
+  },
 ];
 
-// 1. Tüm Ürünleri Getir (GET /api/products)
+// 1. Tüm ürünleri getir
+// GET /api/products
 router.get("/", (req, res) => {
   res.json({
     success: true,
     count: products.length,
-    data: products
+    data: products,
   });
 });
 
-// 2. Tek Bir Ürünü ID'ye Göre Getir (GET /api/products/:id)
+// 2. Tek ürünü ID'ye göre getir
+// GET /api/products/:id
 router.get("/:id", (req, res) => {
-  const productId = parseInt(req.params.id);
+  const productId = parseInt(req.params.id, 10);
+
   const product = products.find((p) => p.id === productId);
 
   if (!product) {
     return res.status(404).json({
       success: false,
-      message: "Ürün bulunamadı"
+      message: "Ürün bulunamadı",
     });
   }
 
   res.json({
     success: true,
-    data: product
+    data: product,
   });
 });
 
-// 3. Yeni Ürün Ekle (POST /api/products)
+// 3. Yeni ürün ekle
+// POST /api/products
 router.post("/", (req, res) => {
-  const { name, price, stock, description, category, image } = req.body;
+  const {
+    title,
+    dept,
+    img,
+    oldPrice,
+    newPrice,
+    description,
+  } = req.body;
 
-  if (!name || !price) {
+  if (!title || !newPrice) {
     return res.status(400).json({
       success: false,
-      message: "Lütfen ürün adı ve fiyatını giriniz"
+      message: "Lütfen ürün adı ve yeni fiyat bilgisini giriniz",
     });
   }
 
   const newProduct = {
-    id: products.length > 0 ? products[products.length - 1].id + 1 : 1,
-    name,
-    price: Number(price),
-    stock: stock ? Number(stock) : 0,
+    id: products.length > 0
+      ? products[products.length - 1].id + 1
+      : 1,
+    title,
+    dept: dept || "Casual",
+    img: img || "",
+    oldPrice: oldPrice || "",
+    newPrice,
     description: description || "",
-    category: category || "Genel",
-    image: image || "https://via.placeholder.com/150"
   };
 
   products.push(newProduct);
@@ -85,44 +191,48 @@ router.post("/", (req, res) => {
   res.status(201).json({
     success: true,
     message: "Ürün başarıyla eklendi",
-    data: newProduct
+    data: newProduct,
   });
 });
 
-// 4. Ürün Güncelle (PUT /api/products/:id)
+// 4. Ürün güncelle
+// PUT /api/products/:id
 router.put("/:id", (req, res) => {
-  const productId = parseInt(req.params.id);
+  const productId = parseInt(req.params.id, 10);
+
   const index = products.findIndex((p) => p.id === productId);
 
   if (index === -1) {
     return res.status(404).json({
       success: false,
-      message: "Güncellenecek ürün bulunamadı"
+      message: "Güncellenecek ürün bulunamadı",
     });
   }
 
   products[index] = {
     ...products[index],
     ...req.body,
-    id: productId // ID değişmesini engelliyoruz
+    id: productId,
   };
 
   res.json({
     success: true,
     message: "Ürün güncellendi",
-    data: products[index]
+    data: products[index],
   });
 });
 
-// 5. Ürün Sil (DELETE /api/products/:id)
+// 5. Ürün sil
+// DELETE /api/products/:id
 router.delete("/:id", (req, res) => {
-  const productId = parseInt(req.params.id);
+  const productId = parseInt(req.params.id, 10);
+
   const index = products.findIndex((p) => p.id === productId);
 
   if (index === -1) {
     return res.status(404).json({
       success: false,
-      message: "Silinecek ürün bulunamadı"
+      message: "Silinecek ürün bulunamadı",
     });
   }
 
@@ -131,7 +241,7 @@ router.delete("/:id", (req, res) => {
   res.json({
     success: true,
     message: "Ürün silindi",
-    data: deletedProduct[0]
+    data: deletedProduct[0],
   });
 });
 
